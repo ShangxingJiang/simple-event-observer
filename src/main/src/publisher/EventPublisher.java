@@ -1,26 +1,29 @@
 package publisher;
 
-import event.HelloWorldEvent;
-import observer.HelloWorldEventListener;
+import event.EventBase;
 import observer.IEventListener;
+import register.EventListenerRegister;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.InvocationTargetException;
 
 public class EventPublisher implements IEventPublisher{
 
-    List<IEventListener> listeners;
+    private final String Execute_Method_Name = "execute";
+    private final EventListenerRegister<EventBase, IEventListener> register;
 
     public EventPublisher() {
-        this.listeners = new ArrayList<>();
-        listeners.add(new HelloWorldEventListener());
+        register = new EventListenerRegister<>();
     }
 
     @Override
-    public void publish() {
-        var event = new HelloWorldEvent();
-        for(var listener : listeners) {
-            listener.execute(event);
+    public void publish(EventBase event) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        var listenerTypes = register.getListenerTypes(event);
+        for (var listenerType : listenerTypes) {
+            var listenerConstructor = listenerType.getConstructor();
+            var listenerObj = listenerConstructor.newInstance();
+            var method = listenerType.getMethod(Execute_Method_Name, event.getClass());
+            method.invoke(listenerObj, event);
         }
+
     }
 }

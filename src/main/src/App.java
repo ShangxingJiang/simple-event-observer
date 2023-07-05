@@ -1,11 +1,11 @@
+import event.HelloWorldEvent;
 import publisher.EventPublisher;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class App {
-    public static void main(String[] args) {
-//        new HelloWorldEventListener().execute(new HelloWorldEvent());
-
+    public static void main(String[] args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         var publisher = new EventPublisher();
-        publisher.publish();
-
+        publisher.publish(new HelloWorldEvent());
     }
 }
