@@ -1,7 +1,9 @@
 package register;
 
 import event.EventBase;
+import event.GenerateFileEvent;
 import event.HelloWorldEvent;
+import observer.GenerateFileEventListener;
 import observer.HelloWorldEventListener;
 import observer.IEventListener;
 
@@ -13,6 +15,7 @@ public class EventListenerRegister <T extends EventBase, E extends IEventListene
 
     public EventListenerRegister() {
         register((Class<T>) HelloWorldEvent.class, (Class<E>) HelloWorldEventListener.class);
+        register((Class<T>) GenerateFileEvent.class, (Class<E>) GenerateFileEventListener.class);
     }
 
     private void register(Class<T> eventType, Class<E> listenerType) {
