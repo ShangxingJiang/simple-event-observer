@@ -2,8 +2,11 @@ package publisher;
 
 import event.EventBase;
 
-import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.concurrent.Future;
 
 public interface IEventPublisher {
-    void publish(EventBase event) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException;
+    void publish(EventBase event);
+
+    List<Future<?>> publishAsync(EventBase event);
 }
