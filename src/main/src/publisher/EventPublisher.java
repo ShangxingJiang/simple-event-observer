@@ -1,6 +1,7 @@
 package publisher;
 
 import event.EventBase;
+import factory.ListenerFactory;
 import observer.IEventListener;
 import register.EventListenerRegister;
 
@@ -12,13 +13,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class EventPublisher implements IEventPublisher{
-
-    private final String Execute_Method_Name = "execute";
-    private final EventListenerRegister<EventBase, IEventListener> register;
     private final ExecutorService WORKER_THREAD_POOL = Executors.newFixedThreadPool(4);
+
+    private final EventListenerRegister<EventBase, IEventListener> register;
+
+    private final ListenerFactory<IEventListener> listenerFactory;
 
     public EventPublisher() {
         register = new EventListenerRegister<>();
+        listenerFactory = new ListenerFactory<>();
     }
 
     @Override
@@ -31,7 +34,6 @@ public class EventPublisher implements IEventPublisher{
                 throw new RuntimeException(e);
             }
         }
-
     }
 
     @Override
@@ -58,10 +60,8 @@ public class EventPublisher implements IEventPublisher{
     }
 
     private void publishEventToListener(EventBase event, Class<IEventListener> listenerType) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        var listenerConstructor = listenerType.getConstructor();
-        var listenerObj = listenerConstructor.newInstance();
-        var method = listenerType.getMethod(Execute_Method_Name, event.getClass());
-        method.invoke(listenerObj, event);
+        var listenerObj = listenerFactory.getEventListener(listenerType);
+        listenerObj.execute(event);
         System.out.println(Thread.currentThread().getName());
     }
 
